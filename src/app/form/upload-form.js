@@ -2,28 +2,28 @@
 import LoadingButton from "@/components/loading-button";
 import { useState, useRef } from "react";
 
-export default function UploadForm() {
+const UploadForm = () => {
   const inputFileRef = useRef(null);
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [projectId, setProjectId] = useState("");
 
   const allowedFileTypes = ['image/png', 'image/jpeg', 'image/jpg'];
-  
+
   const handleUpload = async (event) => {
     event.preventDefault();
 
     const file = inputFileRef.current.files[0];
 
     try {
-      if (file.size > 10 * 1024 * 1024) {
-        throw new Error('File size should be less than 10MB.');
+      if (file.size > 5 * 1024 * 1024) {
+        throw new Error('File size should be less than 5MB.');
       }
 
       if (!allowedFileTypes.includes(file.type)) {
         throw new Error('Invalid file type. Please upload a PNG, JPG, JPEG, or SVG file.');
       }
-      
+
     } catch (error) {
       alert(error.message);
       return;
@@ -44,22 +44,22 @@ export default function UploadForm() {
       });
 
       // Classify image
-      const responseClassify = await fetch(
+      const response = await fetch(
         `/api/image-classification?filename=${file.name}&projectId=${projectId}`,
         {
           method: "POST",
         }
       );
 
-      if (responseClassify.ok) {
-        const data = await responseClassify.json();
+      if (response.ok) {
+        const data = await response.json();
         setImage(data);
       } else {
-        console.error("Error in image classification:", responseClassify.statusText);
+        console.error("Error in image classification:", response.statusText);
       }
     } catch (error) {
       console.error("Error during file upload/classification:", error.message);
-      alert('An error occurred. Please try again.'); 
+      alert('An error occurred. Please try again.');
     } finally {
       setProjectId("");
       setUploading(false);
@@ -153,4 +153,6 @@ export default function UploadForm() {
       }
     </>
   );
-}
+};
+
+export default UploadForm;
