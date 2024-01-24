@@ -7,11 +7,21 @@ export default function UploadForm() {
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [projectId, setProjectId] = useState("");
-
+  
   const handleUpload = async (event) => {
     event.preventDefault();
 
     const file = inputFileRef.current.files[0];
+
+    try {
+      if (file.size > 10 * 1024 * 1024) {
+        throw new Error('File size should be less than 10MB.');
+      }
+      
+    } catch (error) {
+      alert(error.message);
+      return;
+    }
 
     try {
       setUploading(true);
@@ -27,7 +37,7 @@ export default function UploadForm() {
         body: formData,
       });
 
-      // Make a POST request to API endpoint with the filename and projectId as a query parameter
+      // Classify image
       const responseClassify = await fetch(
         `/api/image-classification?filename=${file.name}&projectId=${projectId}`,
         {
@@ -39,12 +49,13 @@ export default function UploadForm() {
         const data = await responseClassify.json();
         setImage(data);
       } else {
-        console.error("Error fetching blob:", responseClassify.statusText);
+        console.error("Error in image classification:", responseClassify.statusText);
       }
     } catch (error) {
-      console.error("Error fetching blob:", error.message);
+      console.error("Error during file upload/classification:", error.message);
+      alert('An error occurred. Please try again.'); 
     } finally {
-      setProjectId(null);
+      setProjectId("");
       setUploading(false);
     }
   };
