@@ -7,6 +7,8 @@ export default function UploadForm() {
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [projectId, setProjectId] = useState("");
+
+  const allowedFileTypes = ['image/png', 'image/jpeg', 'image/jpg'];
   
   const handleUpload = async (event) => {
     event.preventDefault();
@@ -16,6 +18,10 @@ export default function UploadForm() {
     try {
       if (file.size > 10 * 1024 * 1024) {
         throw new Error('File size should be less than 10MB.');
+      }
+
+      if (!allowedFileTypes.includes(file.type)) {
+        throw new Error('Invalid file type. Please upload a PNG, JPG, JPEG, or SVG file.');
       }
       
     } catch (error) {

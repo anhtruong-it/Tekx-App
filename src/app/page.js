@@ -1,5 +1,5 @@
-import Image from "next/image";
-import UploadForm from "./image/upload-form";
+
+import UploadForm from "./form/upload-form";
 
 export default function Home() {
   return (
